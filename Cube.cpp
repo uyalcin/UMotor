@@ -62,23 +62,24 @@ void Cube::draw(sf::RenderWindow& window)
 	for(int i = 0; i < planes.size(); i++)
 		planes[i]->draw(window);
 }	
-void Cube::rotate(float angleY, float angleZ)
+void Cube::rotate(float angleX, float angleY)
 {
-	if(angleZ <= -PI)
-		angleZ = PI;
-	if(angleZ >= PI)
-		angleZ = PI;
 	if(angleY <= -PI)
 		angleY = PI;
 	if(angleY >= PI)
 		angleY = PI;
+	if(angleX <= -PI)
+		angleX = PI;
+	if(angleX >= PI)
+		angleX = PI;
 
-	if(!(angleY >= -PI && angleY <= PI && angleZ >= -PI && angleZ <= PI))
+	// Check the angles limits
+	if(!(angleX >= -PI && angleX <= PI && angleY >= -PI && angleY <= PI))
 		return;
 
 	for(int i = 0; i < planes.size(); i++)
 	{
-		planes[i]->rotAroundY((-angleY * PI) / 180.0f);
-		planes[i]->rotAroundZ((angleZ * PI) / 180.0f);
+		planes[i]->rotAroundX((-angleX * PI) / 180.0f);
+		planes[i]->rotAroundY((angleY * PI) / 180.0f);
 	}
 }

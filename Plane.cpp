@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include "Matrix.h"
 
 Plane::Plane()
 {
@@ -122,61 +123,54 @@ Plane::Plane(Vector3 a, Vector3 b, Vector3 c, Vector3 d):
 	alpha = 0.0f;
 }
 
-void Plane::rotAroundZ(float angle)
+void Plane::rotAroundX(float angle)
 {
-	Vector3 _a, _b, _c, _d;
-	_a=a;
-	_b=b;
-	_c=c;
-	_d=d;
 
-	// Rotation around Z
-	_a.x = (cos(angle)*a.x - sin(angle)*a.z);
-	_d.x = (cos(angle)*d.x - sin(angle)*d.z);
-	_b.x = (cos(angle)*b.x - sin(angle)*b.z);
-	_c.x = (cos(angle)*c.x - sin(angle)*c.z);
+	// Rotation Matrix Rx
+	Matrix Rx(Vector3(1, 0, 0),
+		 Vector3(0, cos(angle), -sin(angle)),
+		 Vector3(0, sin(angle), cos(angle)));
 
-	_a.z = (sin(angle)*a.x + cos(angle)*a.z);
-	_d.z = (sin(angle)*d.x + cos(angle)*d.z);
-	_b.z = (sin(angle)*b.x + cos(angle)*b.z);
-	_c.z = (sin(angle)*c.x + cos(angle)*c.z);
-
-	a=_a;
-	b=_b;
-	c=_c;
-	d=_d;
+	// Rotation around X
+	a = a * Rx;
+	b = b * Rx;
+	c = c * Rx;
+	d = d * Rx;
 }
 
 void Plane::rotAroundY(float angle)
 {
-	Vector3 _a, _b, _c, _d;
-	_a=a;
-	_b=b;
-	_c=c;
-	_d=d;
+	// Rotation Matrix Ry
+	Matrix Ry(Vector3(cos(angle), 0, sin(angle)),
+		 Vector3(0, 1, 0),
+		 Vector3(-sin(angle), 0, cos(angle)));
 
 	// Rotation around Y
-	_a.z = (cos(angle)*a.z - sin(angle)*a.y);
-	_d.z = (cos(angle)*d.z - sin(angle)*d.y);
-	_b.z = (cos(angle)*b.z - sin(angle)*b.y);
-	_c.z = (cos(angle)*c.z - sin(angle)*c.y);
+	a = a * Ry;
+	b = b * Ry;
+	c = c * Ry;
+	d = d * Ry;
+}
 
-	_a.y = (sin(angle)*a.z + cos(angle)*a.y);
-	_d.y = (sin(angle)*d.z + cos(angle)*d.y);
-	_b.y = (sin(angle)*b.z + cos(angle)*b.y);
-	_c.y = (sin(angle)*c.z + cos(angle)*c.y);
+void Plane::rotAroundZ(float angle)
+{
+	// Rotation Matrix Rz
+	Matrix Rz(Vector3(cos(angle), -sin(angle), 0),
+		 Vector3(sin(angle), cos(angle), 0),
+		 Vector3(0, 0, 1));
 
-	a=_a;
-	b=_b;
-	c=_c;
-	d=_d;
+	// Rotation around Z
+	a = a * Rz;
+	b = b * Rz;
+	c = c * Rz;
+	d = d * Rz;
 }
 
 void Plane::rotate(float angle)
 {
 	float distance = size / 2.0f;
 	
-	rotAroundZ(angle);
+	rotAroundX(angle);
 	rotAroundY(angle);
 }
 

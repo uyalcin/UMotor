@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-//class Matrix;
+class Matrix;
 
 class Vector3
 {
@@ -29,7 +29,7 @@ public:
 
 	friend std::ostream&operator<< (std::ostream& out, const Vector3 & f);
 	Vector3 operator*(const float & lhs) const;
-	//Vector3 operator*(Matrix& lhs);
+	Vector3 operator*(Matrix& lhs);
 	Vector3 operator+(const Vector3 & lhs) const;
 	Vector3 operator-(const Vector3 & lhs) const;
 	void operator=(const Vector3& lhs);

@@ -53,16 +53,16 @@ int main()
 	    {
 
 		float angleY = (lastX - event.mouseMove.x) / 10.0f;
-		float angleZ = (lastY - event.mouseMove.y) / 10.0f;
+		float angleX = (lastY - event.mouseMove.y) / 10.0f;
 
 		if(DEBUG)
 		{
+			std::cout << "angleX : " << angleX << std::endl;
 			std::cout << "angleY : " << angleY << std::endl;
-			std::cout << "angleZ : " << angleZ << std::endl;
 		}
 
-		cube->rotate(angleZ, angleY);
-		//cube2->rotate(angleZ, angleY);
+		cube->rotate(angleX, angleY);
+		//cube2->rotate(angleX, angleY);
 
 		
 		lastX = event.mouseMove.x;

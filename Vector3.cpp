@@ -1,5 +1,6 @@
 //#include "stdafx.h"
 #include "Vector3.h"
+#include "Matrix.h"
 #include <math.h>
 
 Vector3::Vector3(): Vector3(0, 0, 0)
@@ -117,7 +118,6 @@ void Vector3::operator=(const Vector3& lhs)
 
 void Vector3::setValue(unsigned int idx, float value)
 {
-	
 	switch (idx)
 	{
 		case 0:
@@ -135,15 +135,15 @@ void Vector3::setValue(unsigned int idx, float value)
 	}
 }
 
-/*Vector3 Vector3::operator*(Matrix& lhs)
+Vector3 Vector3::operator*(Matrix& lhs)
 {
 	Vector3 v;
 	for (int i = 0; i < 3; i++)
 	{
 		float sum = 0.0f;
 		for(int k = 0; k < 3; k++)
-			sum += (*this)[i] * lhs.getValue(i, k);
+			sum += (*this)[k] * lhs.getValue(k, i);
 		v.setValue(i, sum);
 	}
 	return v;
-}*/
+}

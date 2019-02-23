@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include <vector>
 
+class Matrix;
+
 class Plane : public Entity
 {
 	public:
@@ -24,8 +26,9 @@ class Plane : public Entity
 		void draw(sf::RenderWindow& window) override;
 		std::vector<sf::Vertex> sorted_vertices;
 		std::vector<Vector3> getVertex();
-		void rotAroundZ(float angle);
+		void rotAroundX(float angle);
 		void rotAroundY(float angle);
+		void rotAroundZ(float angle);
 		//std::vector<sf::Vertex> vertices;
 };
 

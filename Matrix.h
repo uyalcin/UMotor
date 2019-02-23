@@ -3,6 +3,15 @@
 
 #include "Vector3.h"
 
+// Definition of the matrix
+// Vector3(a, b, c)
+// Vector3(d, e, f)
+// Vector3(g, h, i)
+// Matrix3x3:
+// ( a		b	  c)
+// ( d		e	  f)
+// ( g		h	  i)
+
 class Matrix
 {
 public:
