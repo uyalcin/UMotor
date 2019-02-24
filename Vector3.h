@@ -29,9 +29,12 @@ public:
 
 	friend std::ostream&operator<< (std::ostream& out, const Vector3 & f);
 	Vector3 operator*(const float & lhs) const;
+	Vector3 operator*(const Vector3 & lhs) const;
 	Vector3 operator*(Matrix& lhs);
 	Vector3 operator+(const Vector3 & lhs) const;
+	Vector3 operator+(const float & lhs) const;
 	Vector3 operator-(const Vector3 & lhs) const;
+	bool operator!=(const Vector3 & lhs) const;
 	void operator=(const Vector3& lhs);
 	void setValue(unsigned int idx, float value);
 

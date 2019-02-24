@@ -8,7 +8,6 @@
 
 Plane::Plane()
 {
-
 }
 
 bool compareFaces(const std::vector<int> & f1, const std::vector<int> & f2)
@@ -86,6 +85,7 @@ Plane::Plane(Vector3 _position, float _size)
 	c.z = 0.5f;
 	d.z = 0.5f;
 	alpha = 0.0f;
+	hasTexture = false;
 
 	// Load obj
 	/*std::vector<sf::Vector3f> vertex;
@@ -119,8 +119,24 @@ Plane::Plane(Vector3 a, Vector3 b, Vector3 c, Vector3 d):
 	d(d)
 {
 	size = abs(a.x - b.x);
-
+	hasTexture = false;
 	alpha = 0.0f;
+}
+
+void Plane::backToZero()
+{
+	a = a - position;
+	b = b - position;
+	c = c - position;
+	d = d - position;
+}
+
+void Plane::backToLast()
+{
+	a = a + position;
+	b = b + position;
+	c = c + position;
+	d = d + position;
 }
 
 void Plane::rotAroundX(float angle)
@@ -128,42 +144,54 @@ void Plane::rotAroundX(float angle)
 
 	// Rotation Matrix Rx
 	Matrix Rx(Vector3(1, 0, 0),
-		 Vector3(0, cos(angle), -sin(angle)),
-		 Vector3(0, sin(angle), cos(angle)));
+		  Vector3(0, cos(angle), -sin(angle)),
+		  Vector3(0, sin(angle), cos(angle)));
+
+	backToZero();
 
 	// Rotation around X
 	a = a * Rx;
 	b = b * Rx;
 	c = c * Rx;
 	d = d * Rx;
+
+	backToLast();
 }
 
 void Plane::rotAroundY(float angle)
 {
 	// Rotation Matrix Ry
 	Matrix Ry(Vector3(cos(angle), 0, sin(angle)),
-		 Vector3(0, 1, 0),
-		 Vector3(-sin(angle), 0, cos(angle)));
+		  Vector3(0, 1, 0),
+		  Vector3(-sin(angle), 0, cos(angle)));
+
+	backToZero();
 
 	// Rotation around Y
 	a = a * Ry;
 	b = b * Ry;
 	c = c * Ry;
 	d = d * Ry;
+
+	backToLast();
 }
 
 void Plane::rotAroundZ(float angle)
 {
 	// Rotation Matrix Rz
 	Matrix Rz(Vector3(cos(angle), -sin(angle), 0),
-		 Vector3(sin(angle), cos(angle), 0),
-		 Vector3(0, 0, 1));
+		  Vector3(sin(angle), cos(angle), 0),
+		  Vector3(0, 0, 1));
+
+	backToZero();
 
 	// Rotation around Z
 	a = a * Rz;
 	b = b * Rz;
 	c = c * Rz;
 	d = d * Rz;
+
+	backToLast();
 }
 
 void Plane::rotate(float angle)
@@ -172,6 +200,16 @@ void Plane::rotate(float angle)
 	
 	rotAroundX(angle);
 	rotAroundY(angle);
+}
+
+void Plane::scale(Vector3 s)
+{
+	backToZero();
+	a = a * s;
+	b = b * s;
+	c = c * s;
+	d = d * s;
+	backToLast();
 }
 
 void Plane::draw(sf::RenderWindow& window)
@@ -188,14 +226,32 @@ void Plane::draw(sf::RenderWindow& window)
 	float _cy = SCREEN_Y * (c.y + 1) / 2.0f;
 	float _dx = d.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f);
 	float _dy = SCREEN_Y * (d.y + 1) / 2.0f;
-	
-	vertices.push_back(sf::Vertex(sf::Vector2f(_ax, _ay), sf::Color::Red));
-	vertices.push_back(sf::Vertex(sf::Vector2f(_bx, _by), sf::Color::Green));
-	vertices.push_back(sf::Vertex(sf::Vector2f(_cx, _cy), sf::Color::Blue));
-	vertices.push_back(sf::Vertex(sf::Vector2f(_dx, _dy), sf::Color::Yellow));
 
+	sf::VertexArray quad(sf::Quads, 4);
+	if(hasTexture)
+	{
+		quad[0] = sf::Vertex(sf::Vector2f(_ax, _ay));
+		quad[1] = sf::Vertex(sf::Vector2f(_bx, _by));
+		quad[2] = sf::Vertex(sf::Vector2f(_cx, _cy));
+		quad[3] = sf::Vertex(sf::Vector2f(_dx, _dy));
 
-	window.draw(&vertices[0], vertices.size(), sf::Quads);
+		const float sizeTex = 1024.f;
+		quad[0].texCoords = sf::Vector2f(0.f, 0.f);
+		quad[1].texCoords = sf::Vector2f(sizeTex, 0.f);
+		quad[2].texCoords = sf::Vector2f(sizeTex, sizeTex);
+		quad[3].texCoords = sf::Vector2f(0.f, sizeTex);
+
+		window.draw(quad, &texture);
+	}
+	else
+	{
+		quad[0] = sf::Vertex(sf::Vector2f(_ax, _ay), sf::Color::Red);
+		quad[1] = sf::Vertex(sf::Vector2f(_bx, _by), sf::Color::Green);
+		quad[2] = sf::Vertex(sf::Vector2f(_cx, _cy), sf::Color::Blue);
+		quad[3] = sf::Vertex(sf::Vector2f(_dx, _dy), sf::Color::Yellow);
+
+		window.draw(quad);
+	}
 	// window.draw(&vertices[0], vertices.size(), sf::Triansles);
 		//std::cout << positions[i].x;
 	//}	
@@ -209,6 +265,21 @@ void Plane::draw(sf::RenderWindow& window)
 	
 }
 
+void Plane::setTexture(sf::Texture tex)
+{
+	texture = tex;
+	hasTexture = true;
+}
+
+void Plane::translate(Vector3 v)
+{
+	position = position + v;
+	a = a + v;
+	b = b + v;
+	c = c + v;
+	d = d + v;
+}
+
 std::vector<Vector3> Plane::getVertex()
 {
 	std::vector<Vector3> vertex;
@@ -217,4 +288,35 @@ std::vector<Vector3> Plane::getVertex()
 	vertex.push_back(c);
 	vertex.push_back(d);
 	return vertex;
+}
+
+bool Plane::isSelected(sf::Vector2f mousePos)
+{
+	// Screen to world positions
+	float mx = (mousePos.x - SCREEN_X/2.0f) / (SCREEN_Y / 2.0f);
+	float my = ((2.0f * mousePos.y) / SCREEN_Y) - 1.0f;
+
+	// Get the AABB of the plane
+	float minX;
+	float minY;
+	float maxX;
+	float maxY;
+
+	minX = std::min(a[0], b[0]);
+	minX = std::min(minX, c[0]);
+	minX = std::min(minX, d[0]);
+
+	minY = std::min(a[1], b[1]);
+	minY = std::min(minY, c[1]);
+	minY = std::min(minY, d[1]);
+
+	maxX = std::max(a[0], b[0]);
+	maxX = std::max(maxX, c[0]);
+	maxX = std::max(maxX, d[0]);
+
+	maxY = std::max(a[1], b[1]);
+	maxY = std::max(maxY, c[1]);
+	maxY = std::max(maxY, d[1]);
+
+	return (mx >= minX && mx <= maxX && my >= minY && my <= maxY);
 }

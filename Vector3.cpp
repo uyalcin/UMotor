@@ -94,9 +94,19 @@ Vector3 Vector3::operator*(const float & lhs) const
 	return Vector3(x * lhs, y * lhs, z * lhs);
 }
 
+Vector3 Vector3::operator*(const Vector3 & lhs) const
+{
+	return Vector3(x * lhs.x, y * lhs.y, z * lhs.z);
+}
+
 Vector3 Vector3::operator+(const Vector3 & lhs) const
 {
 	return Vector3(x + lhs.x, y + lhs.y, z + lhs.z);
+}
+
+Vector3 Vector3::operator+(const float & lhs) const
+{
+	return Vector3(x + lhs, y + lhs, z + lhs);
 }
 
 Vector3 Vector3::operator-(const Vector3 & lhs) const
@@ -114,6 +124,11 @@ void Vector3::operator=(const Vector3& lhs)
 	x = lhs.x;
 	y = lhs.y;
 	z = lhs.z;
+}
+
+bool Vector3::operator!=(const Vector3 & lhs) const
+{
+	return !(x == lhs.x && y == lhs.y && z == lhs.z);
 }
 
 void Vector3::setValue(unsigned int idx, float value)

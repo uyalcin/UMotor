@@ -83,3 +83,29 @@ void Cube::rotate(float angleX, float angleY)
 		planes[i]->rotAroundY((angleY * PI) / 180.0f);
 	}
 }
+
+void Cube::translate(Vector3 v)
+{
+	for(int i = 0; i < planes.size(); i++)
+	{
+		planes[i]->translate(v);
+	}
+}
+
+void Cube::scale(Vector3 s)
+{
+	for(int i = 0; i < planes.size(); i++)
+	{
+		planes[i]->scale(s);
+	}
+}
+
+bool Cube::isSelected(sf::Vector2f mousePos)
+{
+	for(int i = 0; i < planes.size(); i++)
+	{
+		if(planes[i]->isSelected(mousePos))
+			return true;
+	}
+	return false;
+}

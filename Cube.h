@@ -16,6 +16,9 @@ class Cube : public Entity
 
 		void draw(sf::RenderWindow& window) override;
 		void rotate(float angleX, float angleY);
+		void translate(Vector3 v);
+		void scale(Vector3 s);
+		bool isSelected(sf::Vector2f);
 };
 
 #endif
