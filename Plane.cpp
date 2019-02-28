@@ -5,6 +5,8 @@
 #include <fstream>
 #include <algorithm>
 #include "Matrix.h"
+#include "Matrix4.h"
+#include "Vector4.h"
 
 Plane::Plane()
 {
@@ -80,10 +82,10 @@ Plane::Plane(Vector3 _position, float _size)
 	d.x -= size / 2.0f;
 	d.y += size / 2.0f;
 
-	a.z = 0.5f;
-	b.z = 0.5f;
-	c.z = 0.5f;
-	d.z = 0.5f;
+	a.z = 0.0f;
+	b.z = 0.0f;
+	c.z = 0.0f;
+	d.z = 0.0f;
 	alpha = 0.0f;
 	hasTexture = false;
 
@@ -141,57 +143,60 @@ void Plane::backToLast()
 
 void Plane::rotAroundX(float angle)
 {
-
 	// Rotation Matrix Rx
-	Matrix Rx(Vector3(1, 0, 0),
-		  Vector3(0, cos(angle), -sin(angle)),
-		  Vector3(0, sin(angle), cos(angle)));
+	Matrix4 Rx(Vector4(1, 0, 0, 0),
+		   Vector4(0, cos(angle), sin(angle), 0),
+		   Vector4(0, -sin(angle), cos(angle), 0),
+		   Vector4(0, 0, 0, 1));
 
-	backToZero();
+	//backToZero();
 
 	// Rotation around X
-	a = a * Rx;
+	/*a = a * Rx;
 	b = b * Rx;
 	c = c * Rx;
-	d = d * Rx;
+	d = d * Rx;*/
+	ViewRotationPitchMatrix = ViewRotationPitchMatrix * Rx;
 
-	backToLast();
+	//backToLast();
 }
 
 void Plane::rotAroundY(float angle)
 {
-	// Rotation Matrix Ry
-	Matrix Ry(Vector3(cos(angle), 0, sin(angle)),
-		  Vector3(0, 1, 0),
-		  Vector3(-sin(angle), 0, cos(angle)));
+	Matrix4 Ry(Vector4(cos(angle), 0, -sin(angle), 0),
+		   Vector4(0, 1, 0, 0),
+		   Vector4(sin(angle), 0, cos(angle), 0),
+		   Vector4(0, 0, 0, 1));
 
-	backToZero();
-
+	//backToZero();
 	// Rotation around Y
-	a = a * Ry;
+	/*a = a * Ry;
 	b = b * Ry;
 	c = c * Ry;
-	d = d * Ry;
+	d = d * Ry;*/
+	ViewRotationYawMatrix = ViewRotationYawMatrix * Ry;
 
-	backToLast();
+	//backToLast();
 }
 
 void Plane::rotAroundZ(float angle)
 {
 	// Rotation Matrix Rz
-	Matrix Rz(Vector3(cos(angle), -sin(angle), 0),
-		  Vector3(sin(angle), cos(angle), 0),
-		  Vector3(0, 0, 1));
+	Matrix4 Rz(Vector4(cos(angle), sin(angle), 0, 0),
+		   Vector4(-sin(angle), cos(angle), 0, 0),
+		   Vector4(0, 0, 1, 0),
+		   Vector4(0, 0, 0, 1));
 
-	backToZero();
+	//backToZero();
 
 	// Rotation around Z
-	a = a * Rz;
+	/*a = a * Rz;
 	b = b * Rz;
 	c = c * Rz;
-	d = d * Rz;
+	d = d * Rz;*/
+	//modelMatrix = modelMatrix * Rz;
 
-	backToLast();
+	//backToLast();
 }
 
 void Plane::rotate(float angle)
@@ -205,27 +210,90 @@ void Plane::rotate(float angle)
 void Plane::scale(Vector3 s)
 {
 	backToZero();
-	a = a * s;
-	b = b * s;
-	c = c * s;
-	d = d * s;
+
+	Matrix4 sM(Vector4(s.x,   0,   0,   0),
+		   Vector4(  0, s.y,   0,   0),
+		   Vector4(  0,   0, s.z,   0),
+		   Vector4(  0,   0,   0,   1));
+
+	Vector4 _a(a, 1);
+	Vector4 _b(b, 1);
+	Vector4 _c(c, 1);
+	Vector4 _d(d, 1);
+
+	a = sM * _a;
+	b = sM * _b;
+	c = sM * _c;
+	d = sM * _d;
+
 	backToLast();
+}
+
+std::vector<Vector4> Plane::getMvpVertex()
+{
+	// View Matrix
+	Matrix4 ViewMatrix = ViewTranslationMatrix * ViewRotationPitchMatrix * ViewRotationYawMatrix * ViewScaleMatrix;
+
+	// ModelMatrix
+	Matrix4 ModelMatrix = ModelTranslationMatrix * ModelRotationMatrix * ModelScaleMatrix;
+
+	// MVP Matrix
+	Matrix4 MVP = ViewMatrix * ModelMatrix;
+
+	Vector4 _a(a, 1);
+	Vector4 _b(b, 1);
+	Vector4 _c(c, 1);
+	Vector4 _d(d, 1);
+
+	Vector4 ma = MVP * _a;
+	Vector4 mb = MVP * _b;
+	Vector4 mc = MVP * _c;
+	Vector4 md = MVP * _d;
+
+	std::vector<Vector4> mvp_Vertex;
+
+	mvp_Vertex.push_back(ma);
+	mvp_Vertex.push_back(mb);
+	mvp_Vertex.push_back(mc);
+	mvp_Vertex.push_back(md);
+
+	return mvp_Vertex;
 }
 
 void Plane::draw(sf::RenderWindow& window)
 {
+	std::vector<Vector4> mvpVertex = getMvpVertex();
+
+	Vector4 ma = mvpVertex[0];
+	Vector4 mb = mvpVertex[1];
+	Vector4 mc = mvpVertex[2];
+	Vector4 md = mvpVertex[3];
+
+	if(ma.z >= 0 || mb.z >= 0 || mc.z >= 0 || md.z >= 0)
+		return;
+
 	alpha = (0.1f * PI) / 180.0f;
 	//rotate(alpha);
 
 	std::vector<sf::Vertex> vertices;
-	float _ax = a.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f);
-	float _ay = SCREEN_Y * (a.y + 1) / 2.0f;
-	float _bx = b.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f);
-	float _by = SCREEN_Y * (b.y + 1) / 2.0f;
-	float _cx = c.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f);
-	float _cy = SCREEN_Y * (c.y + 1) / 2.0f;
-	float _dx = d.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f);
-	float _dy = SCREEN_Y * (d.y + 1) / 2.0f;
+	
+	/*float _ax = (a.x * a.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _ay = (SCREEN_Y * (a.y * a.z + 1) / 2.0f);
+	float _bx = (b.x * b.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _by = (SCREEN_Y * (b.y * b.z + 1) / 2.0f);
+	float _cx = (c.x * c.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _cy = (SCREEN_Y * (c.y * c.z + 1) / 2.0f);
+	float _dx = (d.x * d.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _dy = (SCREEN_Y * (d.y * d.z + 1) / 2.0f);*/
+
+	float _ax = (ma.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _ay = (SCREEN_Y * (ma.y + 1) / 2.0f);
+	float _bx = (mb.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _by = (SCREEN_Y * (mb.y + 1) / 2.0f);
+	float _cx = (mc.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _cy = (SCREEN_Y * (mc.y + 1) / 2.0f);
+	float _dx = (md.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _dy = (SCREEN_Y * (md.y + 1) / 2.0f);
 
 	sf::VertexArray quad(sf::Quads, 4);
 	if(hasTexture)
@@ -261,8 +329,6 @@ void Plane::draw(sf::RenderWindow& window)
 		{
 			vertices.push_back(sf::Vertex(sf::Vector2f(i, j), sf::Color::Red));
 		}*/
-	
-	
 }
 
 void Plane::setTexture(sf::Texture tex)
@@ -271,24 +337,49 @@ void Plane::setTexture(sf::Texture tex)
 	hasTexture = true;
 }
 
-void Plane::translate(Vector3 v)
+void Plane::initPos(Vector3 v)
 {
-	position = position + v;
-	a = a + v;
-	b = b + v;
-	c = c + v;
-	d = d + v;
+	Matrix4 t(Vector4(1, 0, 0, v.x),
+		  Vector4(0, 1, 0, v.y),
+		  Vector4(0, 0, 1, v.z),
+		  Vector4(0, 0, 0, 1));
+
+	Vector4 _position(position, 1);
+	Vector4 _a(a, 1);
+	Vector4 _b(b, 1);
+	Vector4 _c(c, 1);
+	Vector4 _d(d, 1);
+
+	//position = t * _position;
+	/*a = t * _a;
+	b = t * _b;
+	c = t * _c;
+	d = t * _d;*/
+	ModelTranslationMatrix = ModelTranslationMatrix * t;
 }
 
-std::vector<Vector3> Plane::getVertex()
+void Plane::translate(Vector3 v)
 {
-	std::vector<Vector3> vertex;
-	vertex.push_back(a);
-	vertex.push_back(b);
-	vertex.push_back(c);
-	vertex.push_back(d);
-	return vertex;
+	Matrix4 t(Vector4(1, 0, 0, v.x),
+		  Vector4(0, 1, 0, v.y),
+		  Vector4(0, 0, 1, v.z),
+		  Vector4(0, 0, 0, 1));
+
+	Vector4 _position(position, 1);
+	Vector4 _a(a, 1);
+	Vector4 _b(b, 1);
+	Vector4 _c(c, 1);
+	Vector4 _d(d, 1);
+
+	position = t * _position;
+	a = t * _a;
+	b = t * _b;
+	c = t * _c;
+	d = t * _d;
+	//translationMatrix = t * translationMatrix;
+	//ViewTranslationMatrix = ViewTranslationMatrix * t;
 }
+
 
 bool Plane::isSelected(sf::Vector2f mousePos)
 {
@@ -319,4 +410,20 @@ bool Plane::isSelected(sf::Vector2f mousePos)
 	maxY = std::max(maxY, d[1]);
 
 	return (mx >= minX && mx <= maxX && my >= minY && my <= maxY);
+}
+
+void Plane::applyRotation()
+{
+	/*Vector4 _a(a, 1);
+	a = modelMatrix * _a;
+Vector4 _b(b, 1);
+	b = modelMatrix * _b;
+Vector4 _c(c, 1);
+	c = modelMatrix * _c;
+Vector4 _d(d, 1);
+	d = modelMatrix * _d;*/
+	/*modelMatrix.v1 = Vector4(1, 0, 0, 0);
+	modelMatrix.v2 = Vector4(0, 1, 0, 0);
+	modelMatrix.v3 = Vector4(0, 0, 1, 0);
+	modelMatrix.v4 = Vector4(0, 0, 0, 1);*/
 }

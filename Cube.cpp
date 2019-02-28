@@ -1,16 +1,30 @@
 #include "Cube.h"
 #include <algorithm>
 #include "header.h"
+#include <math.h>
 
-bool comparePlaneDepth(const Plane* plane1, const Plane* plane2)
+bool comparePlaneDepth(Plane* plane1, Plane* plane2)
 {
-	float max1 = std::max(plane1->a.z, plane1->b.z);
-	max1 = std::max(max1, plane1->c.z);
-	max1 = std::max(max1, plane1->d.z);
-	float max2 = std::max(plane2->a.z, plane2->b.z);
-	max2 = std::max(max2, plane2->c.z);
-	max2 = std::max(max2, plane2->d.z);
-	return max1 < max2;
+	std::vector<Vector4> mvpPosition1 = plane1->getMvpVertex();
+	std::vector<Vector4> mvpPosition2 = plane2->getMvpVertex();
+
+	float min1 = std::min(mvpPosition1[0].z, mvpPosition1[1].z);
+	min1 = std::min(min1, mvpPosition1[2].z);
+	min1 = std::min(min1, mvpPosition1[3].z);
+
+	float min2 = std::min(mvpPosition2[0].z, mvpPosition2[1].z);
+	min2 = std::min(min2, mvpPosition2[2].z);
+	min2 = std::min(min2, mvpPosition2[3].z);
+	return min1 < min2;
+
+	/*float min1 = std::min(plane1->a.z, plane1->b.z);
+	min1 = std::min(min1, plane1->c.z);
+	min1 = std::min(min1, plane1->d.z);
+
+	float min2 = std::min(plane2->a.z, plane2->b.z);
+	min2 = std::min(min2, plane2->c.z);
+	min2 = std::min(min2, plane2->d.z);
+	return min1 < min2;*/
 }
 
 bool compareVertexDepth(const Vector3 vertex1, const Vector3 vertex2)
@@ -18,7 +32,7 @@ bool compareVertexDepth(const Vector3 vertex1, const Vector3 vertex2)
 	return vertex1.z < vertex2.z;
 }
 
-Cube::Cube(float _size, Vector3 pos = Vector3(0, 0, 0))
+Cube::Cube(float _size, Vector3 pos)
 {
 	float size = _size;
 	Vector3 a(-size, size, size);
@@ -29,14 +43,6 @@ Cube::Cube(float _size, Vector3 pos = Vector3(0, 0, 0))
 	Vector3 f(size, size, -size);
 	Vector3 g(size, -size, -size);
 	Vector3 h(-size, -size, -size);
-	a = a + pos;
-	b = b + pos;
-	c = c + pos;
-	d = d + pos;
-	e = e + pos;
-	f = f + pos;
-	g = g + pos;
-	h = h + pos;
 
 	planes.push_back(new Plane(a, b, c, d));
 	planes.push_back(new Plane(b, f, g, c));
@@ -44,10 +50,13 @@ Cube::Cube(float _size, Vector3 pos = Vector3(0, 0, 0))
 	planes.push_back(new Plane(e, f, g, h));
 	planes.push_back(new Plane(a, e, f, b));
 	planes.push_back(new Plane(d, c, g, h));
+	planes[0]->isDebug = true;
+
+	initPos(pos);
 }
 
 Cube::Cube():
-	Cube(0.5)
+	Cube(0.5, Vector3(0, 0, 0))
 {
 
 }
@@ -81,9 +90,17 @@ void Cube::rotate(float angleX, float angleY)
 	{
 		planes[i]->rotAroundX((-angleX * PI) / 180.0f);
 		planes[i]->rotAroundY((angleY * PI) / 180.0f);
+		//planes[i]->rotAroundZ((angleY * PI) / 180.0f);
 	}
 }
 
+void Cube::initPos(Vector3 v)
+{
+	for(int i = 0; i < planes.size(); i++)
+	{
+		planes[i]->initPos(v);
+	}
+}
 void Cube::translate(Vector3 v)
 {
 	for(int i = 0; i < planes.size(); i++)
@@ -108,4 +125,12 @@ bool Cube::isSelected(sf::Vector2f mousePos)
 			return true;
 	}
 	return false;
+}
+
+void Cube::applyRotation()
+{
+	for(int i = 0; i < planes.size(); i++)
+	{
+		planes[i]->applyRotation();
+	}
 }

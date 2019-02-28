@@ -32,3 +32,8 @@ void World::draw(sf::RenderWindow& window)
 		world[i]->draw(window);
 	}
 }
+
+void World::setCamera(std::shared_ptr<Entity> cam)
+{
+	camera = cam;
+}

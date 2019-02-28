@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "Vector3.h"
 #include <vector>
+#include "Matrix4.h"
 
 class Matrix;
 
@@ -25,7 +26,6 @@ class Plane : public Entity
 		void rotate(float angle);
 		void draw(sf::RenderWindow& window) override;
 		std::vector<sf::Vertex> sorted_vertices;
-		std::vector<Vector3> getVertex();
 
 		// Texturing
 		bool hasTexture = false;
@@ -33,6 +33,7 @@ class Plane : public Entity
 		void setTexture(sf::Texture tex);
 		
 		// Translation
+		void initPos(Vector3 v);
 		void translate(Vector3 v);
 
 		// Rotation
@@ -48,6 +49,23 @@ class Plane : public Entity
 
 		// Is Selected
 		bool isSelected(sf::Vector2f mousePos);
+
+		// Model Matrix
+		Matrix4 ModelTranslationMatrix;
+		Matrix4 ModelRotationMatrix;
+		Matrix4 ModelScaleMatrix;
+
+		// View Matrix
+		Matrix4 ViewTranslationMatrix;
+		Matrix4 ViewRotationPitchMatrix;
+		Matrix4 ViewRotationYawMatrix;
+		Matrix4 ViewScaleMatrix;
+
+		std::vector<Vector4> getMvpVertex();
+
+		// Apply rotation
+		void applyRotation();
+		bool isDebug = false;
 };
 
 #endif

@@ -1,7 +1,8 @@
 //#include "stdafx.h"
-#include "Vector3.h"
-#include "Matrix.h"
 #include <math.h>
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix.h"
 
 Vector3::Vector3(): Vector3(0, 0, 0)
 {
@@ -120,6 +121,13 @@ Vector3 Vector3::operator/(const float & lhs) const
 }
 
 void Vector3::operator=(const Vector3& lhs)
+{
+	x = lhs.x;
+	y = lhs.y;
+	z = lhs.z;
+}
+
+void Vector3::operator=(const Vector4& lhs)
 {
 	x = lhs.x;
 	y = lhs.y;

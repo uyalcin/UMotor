@@ -26,6 +26,7 @@ public:
 	Vector3 operator[](unsigned int idx);
 	friend std::ostream&operator<< (std::ostream& out, Matrix & f);
 	Matrix operator+(Matrix & lhs);
+	Vector3 operator*(Vector3 & lhs);
 	Matrix operator-(Matrix & lhs);
 	Matrix operator*(const float & lhs);
 	Matrix operator*(Matrix & lhs);

@@ -4,6 +4,7 @@
 #include <iostream>
 
 class Matrix;
+class Vector4;
 
 class Vector3
 {
@@ -36,6 +37,7 @@ public:
 	Vector3 operator-(const Vector3 & lhs) const;
 	bool operator!=(const Vector3 & lhs) const;
 	void operator=(const Vector3& lhs);
+	void operator=(const Vector4& lhs);
 	void setValue(unsigned int idx, float value);
 
 	Vector3 operator/(const float & lhs) const;

@@ -2,7 +2,9 @@
 
 Matrix::Matrix()
 {
-
+	v1 = Vector3(1, 0, 0);
+	v2 = Vector3(0, 1, 0);
+	v3 = Vector3(0, 0, 1);
 }
 
 Matrix::Matrix(Vector3 v1, Vector3 v2, Vector3 v3):
@@ -81,6 +83,20 @@ Matrix Matrix::operator*(Matrix & lhs)
 	}
 	return mul;
 }
+
+Vector3 Matrix::operator*(Vector3 & lhs)
+{
+	Vector3 v;
+	for (int i = 0; i < 3; i++)
+	{
+		float sum = 0.0f;
+		for(int k = 0; k < 3; k++)
+			sum += (*this)[i][k] * lhs[k];
+		v.setValue(i, sum);
+	}
+	return v;
+}
+
 
 std::ostream & operator<<(std::ostream & out, Matrix & m)
 {
