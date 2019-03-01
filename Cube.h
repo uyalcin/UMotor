@@ -15,6 +15,7 @@ class Cube : public Entity
 		std::vector<Plane*> planes;
 
 		void draw(sf::RenderWindow& window) override;
+		std::vector<Plane*> getPlanes() override;
 		void rotate(float angleX, float angleY);
 		void initPos(Vector3 v);
 		void translate(Vector3 v);

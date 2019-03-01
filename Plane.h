@@ -8,7 +8,7 @@
 
 class Matrix;
 
-class Plane : public Entity
+class Plane
 {
 	public:
 		Plane();
@@ -24,14 +24,14 @@ class Plane : public Entity
 		float alpha;
 
 		void rotate(float angle);
-		void draw(sf::RenderWindow& window) override;
-		std::vector<sf::Vertex> sorted_vertices;
+		void draw(sf::RenderWindow& window);
 
 		// Texturing
 		bool hasTexture = false;
 		sf::Texture texture;
 		void setTexture(sf::Texture tex);
-		
+
+		Vector3 position;
 		// Translation
 		void initPos(Vector3 v);
 		void translate(Vector3 v);

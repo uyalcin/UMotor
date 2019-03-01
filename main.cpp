@@ -24,9 +24,9 @@ int main()
     // Create camera in position (0, 0, 0) and null rotation
     std::shared_ptr<Entity> cam;
     w.setCamera(cam);
-    std::shared_ptr<Plane> plane(new Plane(Vector3(0.f, 0.f, 0.f), 3.0f));
+    //std::shared_ptr<Plane> plane(new Plane(Vector3(0.f, 0.f, 0.f), 3.0f));
 
-    std::shared_ptr<Cube> skybox(new Cube(0.2, Vector3(0, 0, 0)));
+    std::shared_ptr<Cube> skybox(new Cube(10000, Vector3(0, 0, 0)));
     // Create skybox
     sf::Texture tex;
     tex.setSmooth(true);
@@ -48,10 +48,10 @@ int main()
     std::shared_ptr<Cube> cube4(new Cube(0.2, Vector3(-2.0, 0, 0.0)));
     w.addEntity(cube);
     //w.addEntity(skybox);
-    //w.addEntity(plane);
     w.addEntity(cube2);
     w.addEntity(cube3);
     w.addEntity(cube4);
+    //w.addEntity(plane);
     int lastX = 0;
     int lastY = 0;
     bool mousePressed = false;
@@ -92,34 +92,18 @@ int main()
 	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	    {
 		tr = tr + Vector3(-speed * deltaTime, 0, 0);
-		/*cube->rotate(-angleX, 0);
-		cube2->rotate(-angleX, 0);
-		cube3->rotate(-angleX, 0);
-		cube4->rotate(-angleX, 0);*/
 	    }
 	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	    {
 		tr = tr + Vector3(speed * deltaTime, 0, 0);
-		/*cube->rotate(angleX, 0);
-		cube2->rotate(angleX, 0);
-		cube3->rotate(angleX, 0);
-		cube4->rotate(angleX, 0);*/
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	    {
 		tr = tr + Vector3(0, 0, -speed * deltaTime);
-		/*cube->rotate(0, angleY);
-		cube2->rotate(0, angleY);
-		cube3->rotate(0, angleY);
-		cube4->rotate(0, angleY);*/
 	    }
 	    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	    {
 		tr = tr + Vector3(0, 0, speed * deltaTime);
-		/*cube->rotate(0, -angleY);
-		cube2->rotate(0, -angleY);
-		cube3->rotate(0, -angleY);
-		cube4->rotate(0, -angleY);*/
 	    }
 	
 	    if(tr != Vector3(0, 0, 0))
@@ -154,6 +138,7 @@ int main()
 		cube2->rotate(_angleX, -_angleY);
 		cube3->rotate(_angleX, -_angleY);
 		cube4->rotate(_angleX, -_angleY);
+		skybox->rotate(_angleX, -_angleY);
 		
 		lastX = event.mouseMove.x;
 		lastY = event.mouseMove.y;

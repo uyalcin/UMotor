@@ -277,14 +277,15 @@ void Plane::draw(sf::RenderWindow& window)
 
 	std::vector<sf::Vertex> vertices;
 	
-	/*float _ax = (a.x * a.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
-	float _ay = (SCREEN_Y * (a.y * a.z + 1) / 2.0f);
-	float _bx = (b.x * b.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
-	float _by = (SCREEN_Y * (b.y * b.z + 1) / 2.0f);
-	float _cx = (c.x * c.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
-	float _cy = (SCREEN_Y * (c.y * c.z + 1) / 2.0f);
-	float _dx = (d.x * d.z * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
-	float _dy = (SCREEN_Y * (d.y * d.z + 1) / 2.0f);*/
+	/*const float factor = 1.0f;
+	float _ax = (ma.x / (-ma.z * factor) * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _ay = (SCREEN_Y * (ma.y / (-ma.z * factor) + 1) / 2.0f);
+	float _bx = (mb.x / (-mb.z * factor) * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _by = (SCREEN_Y * (mb.y / (-mb.z * factor) + 1) / 2.0f);
+	float _cx = (mc.x / (-mc.z * factor) * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _cy = (SCREEN_Y * (mc.y / (-mc.z * factor) + 1) / 2.0f);
+	float _dx = (md.x / (-md.z * factor) * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
+	float _dy = (SCREEN_Y * (md.y / (-md.z * factor) + 1) / 2.0f);*/
 
 	float _ax = (ma.x * (SCREEN_Y / 2.0f) + (SCREEN_X / 2.0f));
 	float _ay = (SCREEN_Y * (ma.y + 1) / 2.0f);
@@ -350,12 +351,12 @@ void Plane::initPos(Vector3 v)
 	Vector4 _c(c, 1);
 	Vector4 _d(d, 1);
 
-	//position = t * _position;
-	/*a = t * _a;
+	position = t * _position;
+	a = t * _a;
 	b = t * _b;
 	c = t * _c;
-	d = t * _d;*/
-	ModelTranslationMatrix = ModelTranslationMatrix * t;
+	d = t * _d;
+	//ModelTranslationMatrix = ModelTranslationMatrix * t;
 }
 
 void Plane::translate(Vector3 v)

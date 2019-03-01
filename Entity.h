@@ -3,6 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "Vector3.h"
+#include <vector>
+
+class Plane;
 
 class Entity
 {
@@ -11,6 +14,7 @@ class Entity
 		~Entity();
 
 		virtual void draw(sf::RenderWindow& window) = 0;
+		virtual std::vector<Plane*> getPlanes() = 0;
 
 		Vector3 position;
 		Vector3 rotation;
