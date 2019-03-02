@@ -2,6 +2,7 @@
 #define __VECTOR3_H
 
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 class Matrix;
 class Vector4;
@@ -38,6 +39,7 @@ public:
 	bool operator!=(const Vector3 & lhs) const;
 	void operator=(const Vector3& lhs);
 	void operator=(const Vector4& lhs);
+	void operator=(const sf::Vector3f& lhs);
 	void setValue(unsigned int idx, float value);
 
 	Vector3 operator/(const float & lhs) const;

@@ -1,5 +1,5 @@
-#ifndef __PLANE_H
-#define __PLANE_H
+#ifndef __TRIANGLE_H
+#define __TRIANGLE_H
 
 #include "Entity.h"
 #include "Vector3.h"
@@ -9,23 +9,22 @@
 
 class Matrix;
 
-class Plane : public Primitive
+class Triangle : public Primitive
 {
 	public:
-		Plane();
-		Plane(Vector3 position, float size);
-		Plane(Vector3, Vector3, Vector3, Vector3);
-		~Plane();
+		Triangle();
+		Triangle(Vector3 position, float size);
+		Triangle(Vector3, Vector3, Vector3);
+		~Triangle();
 		
 		Vector3 a;
 		Vector3 b;
 		Vector3 c;
-		Vector3 d;
 		float size;
 		float alpha;
 
 		void rotate(float angle)override;
-		void draw(sf::RenderWindow& window) override;
+		void draw(sf::RenderWindow& window)override;
 
 		// Texturing
 		bool hasTexture = false;
@@ -62,7 +61,7 @@ class Plane : public Primitive
 		Matrix4 ViewRotationYawMatrix;
 		Matrix4 ViewScaleMatrix;
 
-		std::vector<Vector4> getMvpVertex() override;
+		std::vector<Vector4> getMvpVertex()override;
 
 		// Apply rotation
 		void applyRotation();

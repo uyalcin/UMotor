@@ -170,3 +170,10 @@ Vector3 Vector3::operator*(Matrix& lhs)
 	}
 	return v;
 }
+
+void Vector3::operator=(const sf::Vector3f& lhs)
+{
+	x = lhs.x;
+	y = lhs.y;
+	z = lhs.z;
+}

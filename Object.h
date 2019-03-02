@@ -1,18 +1,20 @@
-#ifndef __CUBE_H
-#define __CUBE_H
+#ifndef __OBJECT_H
+#define __OBJECT_H
 
 #include "Entity.h"
 #include "Vector3.h"
 #include "Plane.h"
 #include "Triangle.h"
 #include "Primitive.h"
+#include <string>
 
-class Cube : public Entity
+class Object : public Entity
 {
 	public:
-		Cube(float size, Vector3);
-		Cube();
-		~Cube();
+		Object(float size, Vector3);
+		Object();
+		Object(const char* path, Vector3 pos, float scale);
+		~Object();
 		
 
 		void draw(sf::RenderWindow& window) override;

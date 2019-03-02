@@ -20,13 +20,19 @@ Cube::Cube(float _size, Vector3 pos)
 	Vector3 g(size, -size, -size);
 	Vector3 h(-size, -size, -size);
 
-	planes.push_back(new Plane(a, b, c, d));
-	planes.push_back(new Plane(b, f, g, c));
-	planes.push_back(new Plane(a, e, h, d));
-	planes.push_back(new Plane(e, f, g, h));
-	planes.push_back(new Plane(a, e, f, b));
-	planes.push_back(new Plane(d, c, g, h));
-	planes[0]->isDebug = true;
+	Vector3 i = a + Vector3(0, 0, 1);
+	Vector3 j = b + Vector3(0, 0, 1);
+	Vector3 k = c + Vector3(0, 0, 1);
+
+	primitives.push_back(new Plane(a, b, c, d));
+	primitives.push_back(new Plane(b, f, g, c));
+	primitives.push_back(new Plane(a, e, h, d));
+	primitives.push_back(new Plane(e, f, g, h));
+	primitives.push_back(new Plane(a, e, f, b));
+	primitives.push_back(new Plane(d, c, g, h));
+
+	//primitives.push_back(new Triangle(i, j, k));
+	//planes[0]->isDebug = true;
 
 	initPos(pos);
 }
@@ -43,14 +49,14 @@ Cube::~Cube()
 
 void Cube::draw(sf::RenderWindow& window)
 {
-	/*std::sort(planes.begin(), planes.end(), comparePlaneDepth);
-	for(int i = 0; i < planes.size(); i++)
-		planes[i]->draw(window);*/
+	/*std::sort(primitives.begin(), primitives.end(), comparePlaneDepth);
+	for(int i = 0; i < primitives.size(); i++)
+		primitives[i]->draw(window);*/
 }
 
-std::vector<Plane*> Cube::getPlanes()
+std::vector<Primitive*> Cube::getPrimitives()
 {
-	return planes;
+	return primitives;
 }
 
 void Cube::rotate(float angleX, float angleY)
@@ -68,51 +74,43 @@ void Cube::rotate(float angleX, float angleY)
 	if(!(angleX >= -PI && angleX <= PI && angleY >= -PI && angleY <= PI))
 		return;
 
-	for(int i = 0; i < planes.size(); i++)
+	for(int i = 0; i < primitives.size(); i++)
 	{
-		planes[i]->rotAroundX((-angleX * PI) / 180.0f);
-		planes[i]->rotAroundY((angleY * PI) / 180.0f);
+		primitives[i]->rotAroundX((-angleX * PI) / 180.0f);
+		primitives[i]->rotAroundY((angleY * PI) / 180.0f);
 		//planes[i]->rotAroundZ((angleY * PI) / 180.0f);
 	}
 }
 
 void Cube::initPos(Vector3 v)
 {
-	for(int i = 0; i < planes.size(); i++)
+	for(int i = 0; i < primitives.size(); i++)
 	{
-		planes[i]->initPos(v);
+		primitives[i]->initPos(v);
 	}
 }
 void Cube::translate(Vector3 v)
 {
-	for(int i = 0; i < planes.size(); i++)
+	for(int i = 0; i < primitives.size(); i++)
 	{
-		planes[i]->translate(v);
+		primitives[i]->translate(v);
 	}
 }
 
 void Cube::scale(Vector3 s)
 {
-	for(int i = 0; i < planes.size(); i++)
+	for(int i = 0; i < primitives.size(); i++)
 	{
-		planes[i]->scale(s);
+		primitives[i]->scale(s);
 	}
 }
 
 bool Cube::isSelected(sf::Vector2f mousePos)
 {
-	for(int i = 0; i < planes.size(); i++)
+	for(int i = 0; i < primitives.size(); i++)
 	{
-		if(planes[i]->isSelected(mousePos))
+		if(primitives[i]->isSelected(mousePos))
 			return true;
 	}
 	return false;
-}
-
-void Cube::applyRotation()
-{
-	for(int i = 0; i < planes.size(); i++)
-	{
-		planes[i]->applyRotation();
-	}
 }
